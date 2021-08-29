@@ -1,0 +1,21 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007fca48e8c759, pid=9075, tid=9108
+#
+# JRE version: OpenJDK Runtime Environment 18.9 (11.0.8+10) (build 11.0.8+10)
+# Java VM: OpenJDK 64-Bit Server VM 18.9 (11.0.8+10, mixed mode, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libjimage.so+0x2759]  ImageStrings::find(Endian*, char const*, int*, unsigned int)+0x69
+#
+# Core dump will be written. Default location: Core dumps may be processed with "/usr/share/apport/apport %p %s %c %d %P %E" (or dumping to /home/kleber/Documentos/workspace_p4f/elasticsearch-simple-poc/core.9075)
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:38165 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=35787 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=localhost -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true -Djava.security.egd=file:/dev/./urandom -Xverify:none -XX:TieredStopAtLevel=1 -Dspring.boot.project.name=elasticsearch-simple-poc -javaagent:/home/kleber/Documentos/spring-tool-suite-3.9.12.RELEASE-e4.15.0-linux-gtk-x86_64/sts-bundle/sts-3.9.12.RELEASE/configuration/org.eclipse.osgi/303/0/.cp/lib/javaagent-shaded.jar -Dfile.encoding=UTF-8 br.com.ksgprod.ElasticsearchSimplePocApplication --spring.output.ansi.enabled=always
+
+Host: 

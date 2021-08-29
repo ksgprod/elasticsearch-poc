@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.10</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	
+	<groupId>br.com.ksgprod</groupId>
+	<artifactId>elasticsearch-simple-poc</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>elasticsearch-simple-poc</name>
+	<description>Demo project for Elastic Search</description>
+	
+	<properties>
+		<java.version>11</java.version>
+		<powermock.junit4.version>2.0.7</powermock.junit4.version>
+		<fixture.factory.version>3.1.0</fixture.factory.version>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Elasticsearch -->
+		<dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-elasticsearch</artifactId>
+        </dependency>
+        
+		<dependency>
+		    <groupId>org.elasticsearch</groupId>
+		    <artifactId>elasticsearch</artifactId>
+		</dependency>
+		
+		<dependency>
+	        <groupId>org.elasticsearch.client</groupId>
+	        <artifactId>elasticsearch-rest-high-level-client</artifactId>
+	    </dependency>
+	    
+	    <!-- GSon -->
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		</dependency>
+		
+		<!-- JUnit -->
+		<dependency>
+		    <groupId>org.powermock</groupId>
+		    <artifactId>powermock-module-junit4</artifactId>
+		    <version>${powermock.junit4.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- Fixture Factory -->
+		<dependency>
+		    <groupId>br.com.six2six</groupId>
+		    <artifactId>fixture-factory</artifactId>
+		    <version>${fixture.factory.version}</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>javax.validation</groupId>
+		    <artifactId>validation-api</artifactId>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
