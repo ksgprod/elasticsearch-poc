@@ -13,10 +13,10 @@ public class TransactionToResponseConverter implements Function<Transaction, Tra
 
 	@Override
 	public TransactionResponse apply(Transaction transaction) {
-
+		
 		if(Objects.isNull(transaction)) return null;
 		
-		TransactionResponse response = new TransactionResponse()
+		TransactionResponse transactionResponse = new TransactionResponse()
 				.document(transaction.getStoreDocument())
 				.orderId(transaction.getOrderId())
 				.totalValue(transaction.getTotalValue())
@@ -25,7 +25,7 @@ public class TransactionToResponseConverter implements Function<Transaction, Tra
 				.netValue(transaction.getNetValue())
 				.date(transaction.getTimestamp());
 		
-		return response;
+		return transactionResponse;
 	}
 
 }

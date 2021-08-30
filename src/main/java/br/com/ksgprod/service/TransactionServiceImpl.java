@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.ksgprod.controller.filter.TransactionFilter;
 import br.com.ksgprod.controller.request.TransactionRequest;
-import br.com.ksgprod.controller.response.TransactionListResponse;
 import br.com.ksgprod.controller.response.TransactionResponse;
 import br.com.ksgprod.converter.TransactionToResponseConverter;
 import br.com.ksgprod.domain.Transaction;
@@ -78,7 +78,7 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 	}
 
 	@Override
-	public TransactionListResponse find(TransactionFilter filter) {
+	public List<Transaction> find(TransactionFilter filter) {
 		
 		LOGGER.info("stage=init method=TransactionServiceImpl.find by filter={}", filter);
 		
@@ -93,13 +93,10 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 		sourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.ASC));
 		
 		List<?> transactions = this.search(sourceBuilder);
-		TransactionListResponse response = new TransactionListResponse();
-		
-		transactions.stream().forEach(t -> response.add(this.converter.apply((Transaction) t)));
 		
 		LOGGER.info("stage=end method=TransactionServiceImpl.find by filter={}", filter);
 		
-		return response;
+		return transactions.stream().map(t -> (Transaction) t).collect(Collectors.toList());
 	}
 
 	@Override

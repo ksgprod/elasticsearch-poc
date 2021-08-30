@@ -1,6 +1,7 @@
 package br.com.ksgprod.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ksgprod.controller.filter.ReceivableFilter;
 import br.com.ksgprod.controller.response.ReceivableListResponse;
+import br.com.ksgprod.converter.ReceivablesToResponseListConverter;
+import br.com.ksgprod.domain.Receivable;
 import br.com.ksgprod.service.ReceivableService;
 
 @RestController
@@ -32,8 +35,13 @@ public class ReceivableController {
 	
 	private ReceivableService service;
 	
-	public ReceivableController(ReceivableService service) {
+	private ReceivablesToResponseListConverter converter;
+	
+	public ReceivableController(ReceivableService service,
+			ReceivablesToResponseListConverter converter) {
+		
 		this.service = service;
+		this.converter = converter;
 	}
 
 	@PostMapping
@@ -73,7 +81,8 @@ public class ReceivableController {
 		
 		LOGGER.info("stage=init method=ReceivableController.find by filter={}", filter);
 		
-		ReceivableListResponse response = this.service.find(filter);
+		List<Receivable> receivables = this.service.find(filter);
+		ReceivableListResponse response = this.converter.apply(receivables);
 		
 		LOGGER.info("stage=end method=ReceivableController.find");
 		

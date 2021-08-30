@@ -4,6 +4,7 @@ import static br.com.ksgprod.utils.Indexes.RECEIVABLE;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -15,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import br.com.ksgprod.controller.filter.ReceivableFilter;
-import br.com.ksgprod.controller.response.ReceivableListResponse;
-import br.com.ksgprod.converter.ReceivableToResponseConverter;
 import br.com.ksgprod.domain.Receivable;
 import br.com.ksgprod.repository.ReceivableRepository;
 import br.com.ksgprod.utils.Dates;
@@ -28,15 +27,13 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 	
 	private ReceivableRepository repository;
 	
-	private ReceivableToResponseConverter converter;
+	
 	
 	public ReceivableServiceImpl(RestHighLevelClient client,
-			ReceivableRepository repository, 
-			ReceivableToResponseConverter converter) {
+			ReceivableRepository repository) {
 		
 		super(client, RECEIVABLE, Receivable.class);
 		this.repository = repository;
-		this.converter = converter;
 	}
 
 	@Override
@@ -63,7 +60,7 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 	}
 
 	@Override
-	public ReceivableListResponse find(ReceivableFilter filter) {
+	public List<Receivable> find(ReceivableFilter filter) {
 		
 		LOGGER.info("stage=init method=ReceivableListResponse.find by filter={}", filter);
 		
@@ -78,13 +75,11 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 		sourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.ASC));
 		
 		List<?> receivables = this.search(sourceBuilder);
-		ReceivableListResponse response = new ReceivableListResponse();
-		
-		receivables.stream().forEach(r -> response.add(this.converter.apply((Receivable) r)));
+		List<Receivable> receivableList = receivables.stream().map(r -> (Receivable) r).collect(Collectors.toList());
 		
 		LOGGER.info("stage=end method=ReceivableListResponse.find by filter={}", filter);
 		
-		return response;
+		return receivableList;
 	}
 
 	@Override

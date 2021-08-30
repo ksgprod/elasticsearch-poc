@@ -1,6 +1,7 @@
 package br.com.ksgprod.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -25,6 +26,8 @@ import br.com.ksgprod.controller.filter.TransactionFilter;
 import br.com.ksgprod.controller.request.TransactionRequest;
 import br.com.ksgprod.controller.response.TransactionListResponse;
 import br.com.ksgprod.controller.response.TransactionResponse;
+import br.com.ksgprod.converter.TransactionsToResponseListConverter;
+import br.com.ksgprod.domain.Transaction;
 import br.com.ksgprod.service.TransactionService;
 
 @RestController
@@ -35,9 +38,13 @@ public class TransactionController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionController.class);
 	
 	private TransactionService service;
+	
+	private TransactionsToResponseListConverter converter;
 
-	public TransactionController(TransactionService service) {
+	public TransactionController(TransactionService service,
+			TransactionsToResponseListConverter converter) {
 		this.service = service;
+		this.converter = converter;
 	}
 
 	@PostMapping
@@ -77,7 +84,8 @@ public class TransactionController {
 		
 		LOGGER.info("stage=init method=TransactionController.find by filter={}", filter);
 		
-		TransactionListResponse response = this.service.find(filter);
+		List<Transaction> transactions = this.service.find(filter);
+		TransactionListResponse response = this.converter.apply(transactions);
 		
 		LOGGER.info("stage=end method=TransactionController.find");
 		
