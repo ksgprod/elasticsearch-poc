@@ -1,16 +1,20 @@
 package br.com.ksgprod.service;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.simpleQueryStringQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -83,8 +87,21 @@ public class BaseService {
 		
 	}
 	
-	public QueryBuilder getSimpleQueryStringFilter(String filter) {
-		return nonNull(filter) ? simpleQueryStringQuery(filter) : matchAllQuery();
+	public QueryBuilder getTermQueryFilter(String field, String filter) {
+		return nonNull(filter) ? termQuery(field, filter) : matchAllQuery();
+	}
+	
+	public Long getRandomValue() {
+	    return (long) new Random().ints(1000, 20000).findFirst().getAsInt();
+	}
+	
+	public String getRandomDocument() {
+	    return RandomStringUtils.random(14, FALSE, TRUE);
+	}
+	
+	public LocalDateTime getRandomDate() {
+		int plusDays = new Random().ints(1, 10).findFirst().getAsInt();
+		return LocalDateTime.now().plusDays(plusDays);
 	}
 
 }

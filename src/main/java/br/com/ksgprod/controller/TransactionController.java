@@ -15,12 +15,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ksgprod.controller.filter.TransactionFilter;
+import br.com.ksgprod.controller.request.TransactionRequest;
 import br.com.ksgprod.controller.response.TransactionListResponse;
+import br.com.ksgprod.controller.response.TransactionResponse;
 import br.com.ksgprod.service.TransactionService;
 
 @RestController
@@ -36,7 +40,7 @@ public class TransactionController {
 		this.service = service;
 	}
 
-	@PostMapping()
+	@PostMapping
     public void init() {
 		
 		LOGGER.info("stage=init method=TransactionController.init");
@@ -47,7 +51,7 @@ public class TransactionController {
 		
     }
 	
-	@GetMapping()
+	@GetMapping
     public TransactionListResponse find(
     		@RequestParam(value = "document", required = false) String document,
     		
@@ -80,7 +84,7 @@ public class TransactionController {
         return response;
     }
 	
-	@DeleteMapping()
+	@DeleteMapping
 	public void delete() {
 		
 		LOGGER.info("stage=init method=TransactionController.delete");
@@ -88,6 +92,19 @@ public class TransactionController {
 		this.service.delete();
 		
 		LOGGER.info("stage=end method=TransactionController.delete");
+		
+	}
+	
+	@PutMapping
+	public TransactionResponse update(@RequestBody TransactionRequest request) {
+		
+		LOGGER.info("stage=init method=TransactionController.update by request={}", request);
+		
+		TransactionResponse response = this.service.update(request);
+		
+		LOGGER.info("stage=end method=TransactionController.update to response={}", response);
+		
+		return response;
 		
 	}
 

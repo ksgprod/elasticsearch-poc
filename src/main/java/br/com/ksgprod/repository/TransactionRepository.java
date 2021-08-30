@@ -7,5 +7,7 @@ import br.com.ksgprod.domain.Transaction;
 
 @Repository
 public interface TransactionRepository extends ElasticsearchRepository<Transaction, String> {
+	
+	Transaction findByOrderId(String orderId);
 
 }

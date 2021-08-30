@@ -36,7 +36,7 @@ public class ReceivableController {
 		this.service = service;
 	}
 
-	@PostMapping()
+	@PostMapping
     public void init() {
 		
 		LOGGER.info("stage=init method=ReceivableController.init");
@@ -47,7 +47,7 @@ public class ReceivableController {
 		
     }
 	
-	@GetMapping()
+	@GetMapping
     public ReceivableListResponse find(
     		@RequestParam(value = "document", required = false) String document,
     		
@@ -80,7 +80,7 @@ public class ReceivableController {
         return response;
     }
 	
-	@DeleteMapping()
+	@DeleteMapping
 	public void delete() {
 		
 		LOGGER.info("stage=init method=ReceivableController.delete");

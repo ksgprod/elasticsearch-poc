@@ -44,13 +44,20 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 		
 		LOGGER.info("stage=init method=ReceivableListResponse.init");
 		
-		Receivable receivable = new Receivable()
-				.storeDocument("123123123")
-				.netValue(123L);
-		
-		receivable.setTimestamp(Dates.formatDate(LocalDateTime.now()));
-		
-		this.repository.save(receivable);
+		for (int i = 0; i < 4; i++) {
+			String document = this.getRandomDocument();
+			
+			for (int j = 0; j < 30; j++) {
+				LocalDateTime date = this.getRandomDate();
+
+				Receivable receivable = new Receivable()
+						.storeDocument(document)
+						.netValue(this.getRandomValue() * 100);
+				
+				receivable.setTimestamp(Dates.formatDate(date));
+				this.repository.save(receivable);
+			}
+		}
 		
 		LOGGER.info("stage=end method=ReceivableListResponse.init");
 	}
@@ -65,7 +72,7 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 		sourceBuilder.query(
 				QueryBuilders.boolQuery()
 					.filter(this.getRangeDateFilter(filter.getStartDate(), filter.getEndDate()))
-					.filter(this.getSimpleQueryStringFilter(filter.getDocument()))
+					.filter(this.getTermQueryFilter("storeDocument", filter.getDocument()))
 				).from(filter.getPage()).size(filter.getQuantity());
 		
 		sourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.ASC));

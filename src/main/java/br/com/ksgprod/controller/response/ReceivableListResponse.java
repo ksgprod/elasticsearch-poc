@@ -7,7 +7,7 @@ import org.springframework.util.CollectionUtils;
 
 public class ReceivableListResponse {
 
-	private List<ReceivableResponse> receivables;
+	private List<ReceivableResponse> receivables = new ArrayList<ReceivableResponse>();
 
 	public List<ReceivableResponse> getReceivables() {
 		return receivables;

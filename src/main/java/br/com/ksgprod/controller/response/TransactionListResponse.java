@@ -7,7 +7,7 @@ import org.springframework.util.CollectionUtils;
 
 public class TransactionListResponse {
 
-	private List<TransactionResponse> transactions;
+	private List<TransactionResponse> transactions = new ArrayList<TransactionResponse>();
 
 	public List<TransactionResponse> getTransactions() {
 		return transactions;
