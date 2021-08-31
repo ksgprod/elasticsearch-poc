@@ -76,12 +76,12 @@ public class BaseService {
 		return results;
 	}
 	
-	public RangeQueryBuilder getRangeDateFilter(LocalDate startDate, LocalDate endDate) {
+	public RangeQueryBuilder getRangeDateFilter(String field, LocalDate startDate, LocalDate endDate) {
 		
 		LocalDateTime init = nonNull(startDate) ? Dates.getInitialTimestampOfDay(startDate) : null;
 		LocalDateTime end = nonNull(endDate) ? Dates.getFinalTimestampOfDay(endDate) : null;
 		
-		RangeQueryBuilder queryBuilder = QueryBuilders.rangeQuery("timestamp").from(init).to(end);
+		RangeQueryBuilder queryBuilder = QueryBuilders.rangeQuery(field).from(init).to(end);
 		
 		return queryBuilder;
 		
@@ -102,6 +102,10 @@ public class BaseService {
 	public LocalDateTime getRandomDate() {
 		int plusDays = new Random().ints(1, 10).findFirst().getAsInt();
 		return LocalDateTime.now().plusDays(plusDays);
+	}
+	
+	public int getInitPage(int page, int size) {
+		return (size * page) + 1;
 	}
 
 }

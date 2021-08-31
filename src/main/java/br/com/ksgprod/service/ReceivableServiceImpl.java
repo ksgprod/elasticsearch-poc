@@ -1,5 +1,7 @@
 package br.com.ksgprod.service;
 
+import static br.com.ksgprod.domain.DomainModel.TIMESTAMP;
+import static br.com.ksgprod.domain.Receivable.STORE_DOCUMENT;
 import static br.com.ksgprod.utils.Indexes.RECEIVABLE;
 
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -26,8 +29,6 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReceivableServiceImpl.class);
 	
 	private ReceivableRepository repository;
-	
-	
 	
 	public ReceivableServiceImpl(RestHighLevelClient client,
 			ReceivableRepository repository) {
@@ -66,13 +67,15 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 		
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		
-		sourceBuilder.query(
-				QueryBuilders.boolQuery()
-					.filter(this.getRangeDateFilter(filter.getStartDate(), filter.getEndDate()))
-					.filter(this.getTermQueryFilter("storeDocument", filter.getDocument()))
-				).from(filter.getPage()).size(filter.getQuantity());
+		BoolQueryBuilder query = QueryBuilders.boolQuery()
+				.filter(this.getRangeDateFilter(TIMESTAMP, filter.getStartDate(), filter.getEndDate()))
+				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocument()));
 		
-		sourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.ASC));
+		sourceBuilder.from(this.getInitPage(filter.getPage(), filter.getQuantity()));
+		sourceBuilder.size(filter.getQuantity());
+		sourceBuilder.sort(new FieldSortBuilder(TIMESTAMP).order(SortOrder.ASC));
+		sourceBuilder.query(query);
+		
 		
 		List<?> receivables = this.search(sourceBuilder);
 		List<Receivable> receivableList = receivables.stream().map(r -> (Receivable) r).collect(Collectors.toList());

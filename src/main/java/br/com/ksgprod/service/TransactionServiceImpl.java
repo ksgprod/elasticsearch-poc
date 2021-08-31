@@ -1,5 +1,7 @@
 package br.com.ksgprod.service;
 
+import static br.com.ksgprod.domain.DomainModel.TIMESTAMP;
+import static br.com.ksgprod.domain.Transaction.STORE_DOCUMENT;
 import static br.com.ksgprod.utils.Indexes.TRANSACTION;
 import static java.math.RoundingMode.HALF_DOWN;
 
@@ -11,6 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -84,13 +87,14 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 		
 		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 		
-		sourceBuilder.query(
-				QueryBuilders.boolQuery()
-					.filter(this.getRangeDateFilter(filter.getStartDate(), filter.getEndDate()))
-					.filter(this.getTermQueryFilter("storeDocument", filter.getDocument()))
-				).from(filter.getPage()).size(filter.getQuantity());
+		BoolQueryBuilder query = QueryBuilders.boolQuery()
+				.filter(this.getRangeDateFilter(TIMESTAMP, filter.getStartDate(), filter.getEndDate()))
+				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocument()));
 		
-		sourceBuilder.sort(new FieldSortBuilder("timestamp").order(SortOrder.ASC));
+		sourceBuilder.from(this.getInitPage(filter.getPage(), filter.getQuantity()));
+		sourceBuilder.size(filter.getQuantity());
+		sourceBuilder.sort(new FieldSortBuilder(TIMESTAMP).order(SortOrder.ASC));
+		sourceBuilder.query(query);
 		
 		List<?> transactions = this.search(sourceBuilder);
 		

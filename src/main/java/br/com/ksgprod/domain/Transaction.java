@@ -6,6 +6,8 @@ import br.com.ksgprod.utils.Indexes;
 
 @Document(indexName = Indexes.TRANSACTION)
 public class Transaction extends DomainModel<Transaction> {
+	
+	public static final String STORE_DOCUMENT = "storeDocument";
 
 	private String storeDocument;
 	

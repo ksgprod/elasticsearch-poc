@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 
 public class DomainModel<T extends DomainModel<T>> {
 	
+	public static final String TIMESTAMP = "timestamp";
+	
 	private String id;
 	
 	@Field(type = FieldType.Date, store = true, format = DateFormat.custom, pattern = YYY_MM_DD_T_HH_MM_SS)

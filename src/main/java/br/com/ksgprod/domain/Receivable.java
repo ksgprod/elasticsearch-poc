@@ -6,6 +6,8 @@ import br.com.ksgprod.utils.Indexes;
 
 @Document(indexName = Indexes.RECEIVABLE)
 public class Receivable extends DomainModel<Receivable> {
+	
+	public static final String STORE_DOCUMENT = "storeDocument";
 
 	private String storeDocument;
 	private Long netValue;
