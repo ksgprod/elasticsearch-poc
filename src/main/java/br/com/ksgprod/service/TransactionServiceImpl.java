@@ -7,6 +7,7 @@ import static java.math.RoundingMode.HALF_DOWN;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.SumAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -24,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import br.com.ksgprod.controller.filter.TransactionFilter;
 import br.com.ksgprod.controller.request.TransactionRequest;
+import br.com.ksgprod.controller.response.StoreTotalValueListResponse;
 import br.com.ksgprod.controller.response.TransactionResponse;
+import br.com.ksgprod.converter.StoreTotalValueResponseConverter;
 import br.com.ksgprod.converter.TransactionToResponseConverter;
 import br.com.ksgprod.domain.Transaction;
 import br.com.ksgprod.exception.TransactionNotFoundException;
@@ -36,17 +41,23 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionServiceImpl.class);
 	
+	private static final String TOTAL = "total";
+	
 	private TransactionRepository repository;
 	
 	private TransactionToResponseConverter converter;
 	
+	private StoreTotalValueResponseConverter storeValueConverter;
+	
 	public TransactionServiceImpl(RestHighLevelClient client, 
 			TransactionRepository repository, 
-			TransactionToResponseConverter converter) {
+			TransactionToResponseConverter converter,
+			StoreTotalValueResponseConverter storeValueConverter) {
 		
 		super(client, TRANSACTION, Transaction.class);
 		this.repository = repository;
 		this.converter = converter;
+		this.storeValueConverter = storeValueConverter;
 	}
 
 	@Override
@@ -54,10 +65,10 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 		
 		LOGGER.info("stage=init method=TransactionServiceImpl.init");
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 2; i++) {
 			String document = this.getRandomDocument();
 			
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 2; j++) {
 				LocalDateTime date = this.getRandomDate();
 				Long totalValue = this.getRandomValue();
 				Long percentage = 200L;
@@ -89,7 +100,7 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
 		
 		BoolQueryBuilder query = QueryBuilders.boolQuery()
 				.filter(this.getRangeDateFilter(TIMESTAMP, filter.getStartDate(), filter.getEndDate()))
-				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocument()));
+				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocuments()));
 		
 		sourceBuilder.from(this.getInitPage(filter.getPage(), filter.getQuantity()));
 		sourceBuilder.size(filter.getQuantity());
@@ -148,5 +159,37 @@ public class TransactionServiceImpl extends BaseService implements TransactionSe
         		.setScale(2, HALF_DOWN);
 		return value.multiply(hundred).longValue();
     }
+
+	@Override
+	public StoreTotalValueListResponse sumTotalValue(TransactionFilter filter) {
+		
+		LOGGER.info("stage=init method=TransactionServiceImpl.sumTotalValue by filter={}", filter);
+		
+		StoreTotalValueListResponse response = new StoreTotalValueListResponse();
+		
+		filter.getDocuments().forEach(document -> {
+			
+			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+			SumAggregationBuilder aggregation = AggregationBuilders.sum(TOTAL).field(Transaction.TOTAL_VALUE);
+			BoolQueryBuilder query = QueryBuilders.boolQuery()
+					.filter(this.getRangeDateFilter(TIMESTAMP, filter.getStartDate(), filter.getEndDate()))
+					.filter(this.getTermQueryFilter(STORE_DOCUMENT, Arrays.asList(document)));
+			
+//				AggregationBuilder aggregation = AggregationBuilders.global("agg")
+//						.subAggregation(AggregationBuilders.terms("by_store").field(Transaction.STORE_DOCUMENT)
+//					    .subAggregation(AggregationBuilders.sum("total_value").field(Transaction.TOTAL_VALUE)));
+			
+			sourceBuilder.query(query);
+			sourceBuilder.aggregation(aggregation);
+			
+			Long sum = (long) this.searchSumAggregation(sourceBuilder, TOTAL);
+			
+			response.add(this.storeValueConverter.apply(document, sum));
+		});
+			
+		LOGGER.info("stage=end method=TransactionServiceImpl.sumTotalValue by filter={}", filter);
+		
+		return response;
+	}
 
 }

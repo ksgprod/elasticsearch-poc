@@ -57,7 +57,7 @@ public class ReceivableController {
 	
 	@GetMapping
     public ReceivableListResponse find(
-    		@RequestParam(value = "document", required = false) String document,
+    		@RequestParam(value = "documents", required = false) List<String> documents,
     		
     		@DateTimeFormat(iso = ISO.DATE)
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
@@ -73,7 +73,7 @@ public class ReceivableController {
 		    @RequestParam(value = "quantity") Integer quantity) {
 		
 		ReceivableFilter filter = new ReceivableFilter()
-				.document(document)
+				.documents(documents)
 				.startDate(startDate)
 				.endDate(endDate)
 				.page(page)

@@ -1,6 +1,9 @@
 package br.com.ksgprod.domain;
 
+import static org.springframework.data.elasticsearch.annotations.FieldType.Text;
+
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 import br.com.ksgprod.utils.Indexes;
 
@@ -8,7 +11,9 @@ import br.com.ksgprod.utils.Indexes;
 public class Transaction extends DomainModel<Transaction> {
 	
 	public static final String STORE_DOCUMENT = "storeDocument";
+	public static final String TOTAL_VALUE = "totalValue";
 
+	@Field(type = Text, fielddata = true)
 	private String storeDocument;
 	
 	private String orderId;

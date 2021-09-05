@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.ksgprod.controller.filter.TransactionFilter;
 import br.com.ksgprod.controller.request.TransactionRequest;
+import br.com.ksgprod.controller.response.StoreTotalValueListResponse;
 import br.com.ksgprod.controller.response.TransactionListResponse;
 import br.com.ksgprod.controller.response.TransactionResponse;
 import br.com.ksgprod.converter.TransactionsToResponseListConverter;
@@ -60,7 +61,7 @@ public class TransactionController {
 	
 	@GetMapping
     public TransactionListResponse find(
-    		@RequestParam(value = "document", required = false) String document,
+    		@RequestParam(value = "documents", required = false) List<String> documents,
     		
     		@DateTimeFormat(iso = ISO.DATE)
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
@@ -76,7 +77,7 @@ public class TransactionController {
 		    @RequestParam(value = "quantity") Integer quantity) {
 		
 		TransactionFilter filter = new TransactionFilter()
-				.document(document)
+				.documents(documents)
 				.startDate(startDate)
 				.endDate(endDate)
 				.page(page)
@@ -91,6 +92,30 @@ public class TransactionController {
 		
         return response;
     }
+	
+	@GetMapping(value = "/totalValue")
+	public StoreTotalValueListResponse sumTotalValue(
+			@RequestParam(value = "documents") List<String> documents,
+			
+			@DateTimeFormat(iso = ISO.DATE)
+			@RequestParam(value = "startDate", required = false) LocalDate startDate,
+			
+			@DateTimeFormat(iso = ISO.DATE)
+			@RequestParam(value = "endDate", required = false) LocalDate endDate) {
+		
+		TransactionFilter filter = new TransactionFilter()
+				.documents(documents)
+				.startDate(startDate)
+				.endDate(endDate);
+		
+		LOGGER.info("stage=init method=TransactionController.sumTotalValue by filter={}", filter);
+		
+		StoreTotalValueListResponse response = this.service.sumTotalValue(filter);
+		
+		LOGGER.info("stage=end method=TransactionController.sumTotalValue");
+		
+		return response;
+	}
 	
 	@DeleteMapping
 	public void delete() {

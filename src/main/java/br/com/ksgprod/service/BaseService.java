@@ -4,7 +4,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Objects.nonNull;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -23,6 +23,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.metrics.Sum;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class BaseService {
 		this.clazz = clazz;
 	}
 
-	public List<?> search(SearchSourceBuilder sourceBuilder) {
+	protected List<?> search(SearchSourceBuilder sourceBuilder) {
 		
 		List<?> results = null;
 		
@@ -76,7 +77,33 @@ public class BaseService {
 		return results;
 	}
 	
-	public RangeQueryBuilder getRangeDateFilter(String field, LocalDate startDate, LocalDate endDate) {
+	protected double searchSumAggregation(SearchSourceBuilder sourceBuilder, String aggregationName) {
+		
+		Long sum = 0L;
+		
+		LOGGER.info("stage=init method=BaseService.searchSumAggregation");
+		
+		try {
+			SearchRequest searchRequest = new SearchRequest().indices(this.index);
+			searchRequest.source(sourceBuilder);
+		
+			SearchResponse searchResponse = this.client.search(searchRequest, RequestOptions.DEFAULT);
+			
+			Sum agg = searchResponse.getAggregations().get(aggregationName);
+			sum = (long) agg.getValue();
+			
+			LOGGER.info("stage=end method=BaseService.searchSumAggregation by sum={}", sum);
+			
+		} catch (IOException e) {
+			LOGGER.error("stage=error method=BaseService.search error={}", e.getMessage());
+			throw new SearchException(e.getMessage());
+		}
+		
+		return sum;
+		
+	}
+	
+	protected RangeQueryBuilder getRangeDateFilter(String field, LocalDate startDate, LocalDate endDate) {
 		
 		LocalDateTime init = nonNull(startDate) ? Dates.getInitialTimestampOfDay(startDate) : null;
 		LocalDateTime end = nonNull(endDate) ? Dates.getFinalTimestampOfDay(endDate) : null;
@@ -87,25 +114,25 @@ public class BaseService {
 		
 	}
 	
-	public QueryBuilder getTermQueryFilter(String field, String filter) {
-		return nonNull(filter) ? termQuery(field, filter) : matchAllQuery();
+	protected QueryBuilder getTermQueryFilter(String field, List<String> filter) {
+		return nonNull(filter) ? termsQuery(field, filter) : matchAllQuery();
 	}
 	
-	public Long getRandomValue() {
+	protected Long getRandomValue() {
 	    return (long) new Random().ints(1000, 20000).findFirst().getAsInt();
 	}
 	
-	public String getRandomDocument() {
+	protected String getRandomDocument() {
 	    return RandomStringUtils.random(14, FALSE, TRUE);
 	}
 	
-	public LocalDateTime getRandomDate() {
+	protected LocalDateTime getRandomDate() {
 		int plusDays = new Random().ints(1, 10).findFirst().getAsInt();
 		return LocalDateTime.now().plusDays(plusDays);
 	}
 	
-	public int getInitPage(int page, int size) {
-		return (size * page) + 1;
+	protected int getInitPage(int page, int size) {
+		return page == 0 ? page : (size * page);
 	}
 
 }

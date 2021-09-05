@@ -1,12 +1,13 @@
 package br.com.ksgprod.controller.filter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.google.gson.Gson;
 
 public class ReceivableFilter {
 	
-	private String document;
+	private List<String> documents;
 	
 	private LocalDate startDate;
 	
@@ -16,8 +17,8 @@ public class ReceivableFilter {
 	
 	private Integer quantity;
 
-	public String getDocument() {
-		return document;
+	public List<String> getDocuments() {
+		return documents;
 	}
 	
 	public LocalDate getStartDate() {
@@ -36,8 +37,8 @@ public class ReceivableFilter {
 		return quantity;
 	}
 	
-	public ReceivableFilter document(String document) {
-		this.document = document;
+	public ReceivableFilter documents(List<String> documents) {
+		this.documents = documents;
 		return this;
 	}
 	

@@ -69,7 +69,7 @@ public class ReceivableServiceImpl extends BaseService implements ReceivableServ
 		
 		BoolQueryBuilder query = QueryBuilders.boolQuery()
 				.filter(this.getRangeDateFilter(TIMESTAMP, filter.getStartDate(), filter.getEndDate()))
-				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocument()));
+				.filter(this.getTermQueryFilter(STORE_DOCUMENT, filter.getDocuments()));
 		
 		sourceBuilder.from(this.getInitPage(filter.getPage(), filter.getQuantity()));
 		sourceBuilder.size(filter.getQuantity());
