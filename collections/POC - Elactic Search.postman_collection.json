@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/api/transaction?page=0&quantity=50",
+					"raw": "localhost:8080/api/transaction?page=0&quantity=10",
 					"host": [
 						"localhost"
 					],
@@ -27,21 +27,21 @@
 						},
 						{
 							"key": "quantity",
-							"value": "50"
+							"value": "10"
 						},
 						{
 							"key": "startDate",
-							"value": "2021-09-01",
+							"value": "2021-08-31",
 							"disabled": true
 						},
 						{
 							"key": "endDate",
-							"value": "2021-09-01",
+							"value": "2021-08-31",
 							"disabled": true
 						},
 						{
-							"key": "document",
-							"value": "42112862893625",
+							"key": "documents",
+							"value": "61350423926754",
 							"disabled": true
 						}
 					]
@@ -74,7 +74,7 @@
 							"value": "30"
 						},
 						{
-							"key": "document",
+							"key": "documents",
 							"value": "41039233277694",
 							"disabled": true
 						},
@@ -87,6 +87,42 @@
 							"key": "endDate",
 							"value": "2021-09-06",
 							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Store Total Value",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/transaction/totalValue?documents=71039680448122,61350423926754",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"transaction",
+						"totalValue"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2021-08-30",
+							"disabled": true
+						},
+						{
+							"key": "endDate",
+							"value": "2021-08-30",
+							"disabled": true
+						},
+						{
+							"key": "documents",
+							"value": "71039680448122,61350423926754"
 						}
 					]
 				}
